@@ -1,5 +1,6 @@
 <script lang="ts">
 import PouchDB from 'pouchdb'
+import { ref } from 'vue'
 
 export default {
   data() {
@@ -16,8 +17,22 @@ export default {
   },
 
   methods: {
-
     fetchData() {
+      const storage = ref(this.storage);
+      const self = this;
+      if (storage.value) {
+        (storage.value).allDocs({
+          include_docs: true,
+          attachments: true
+        }).then(function (result: any) {
+          console.log('fetchData success', result);
+          self.data = result.rows;
+        }.bind(this)).catch(function (error: any) {
+          console.log('fetchData error', error);
+        });
+      } else {
+        console.log('nothing in storage');
+      }
     },
 
     initDatabase() {
